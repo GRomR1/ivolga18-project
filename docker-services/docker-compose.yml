@@ -1,0 +1,52 @@
+version: "3.5"
+
+services:
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: always
+    ports:
+      - 3001:3000
+    user: "1000" # grafana should have the user rights to the filesystem (1000 is the ID of my current user)
+    volumes:
+      - /opt/grafana/data:/var/lib/grafana
+      - /opt/grafana/config/grafana.ini:/etc/grafana/grafana.ini:ro
+    networks:
+      - ivo_net
+
+  influxdb:
+    container_name: influxdb
+    image: influxdb:latest
+    restart: always
+    ports:
+      - 8087:8086
+    volumes:
+      - /opt/influxdb/data:/var/lib/influxdb
+      - /opt/influxdb/config/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+    networks:
+      - ivo_net
+
+  telegraf:
+    container_name: telegraf
+    image: telegraf:latest
+    restart: always
+    volumes:
+      - /opt/telegraf/config:/etc/telegraf
+    networks:
+      - ivo_net
+
+  mosquitto:
+    container_name: mosquitto
+    image: eclipse-mosquitto:latest
+    restart: always
+    ports:
+      - 1884:1883
+    volumes:
+      - /opt/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    networks:
+      - ivo_net
+
+
+networks:
+  ivo_net:
+    name: ivo
